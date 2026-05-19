@@ -772,6 +772,82 @@ src="https://www.facebook.com/tr?id=2973086382883800&ev=PageView&noscript=1"
     }
   }
 
+  /* ── NOTIFICATIONS ── */
+  .notification-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 320px;
+  }
+
+  .notification {
+    background: linear-gradient(135deg, rgba(224,28,28,0.95) 0%, rgba(200,20,20,0.95) 100%);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 16px 20px;
+    color: var(--white);
+    font-size: 0.9rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    animation: slideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    backdrop-filter: blur(10px);
+  }
+
+  .notification-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .notification-text {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.8);
+  }
+
+  .notification-icon {
+    display: inline-block;
+    margin-right: 8px;
+    font-size: 1.1rem;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(400px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideOut {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(400px);
+    }
+  }
+
+  .notification.exit {
+    animation: slideOut 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @media (max-width: 480px) {
+    .notification-container {
+      bottom: 12px;
+      right: 12px;
+      left: 12px;
+      max-width: none;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -1038,7 +1114,7 @@ src="https://www.facebook.com/tr?id=2973086382883800&ev=PageView&noscript=1"
   <div class="price-box reveal">
     <span class="price-label">Acesso completo</span>
     <div class="price-old">De R$ 199,00</div>
-    <div class="price-value"><sup>R$</sup>19<span style="font-size:0.6em;margin-left:4px;">,90</span></div>
+    <div class="price-value"><sup>R$</sup>29<span style="font-size:0.6em;margin-left:4px;">,90</span></div>
     <div class="price-installment">Investimento único — acesso vitalício</div>
   </div>
 
@@ -1085,6 +1161,89 @@ src="https://www.facebook.com/tr?id=2973086382883800&ev=PageView&noscript=1"
 <footer>
   © 2025 · Método Digital · Todos os direitos reservados
 </footer>
+
+<!-- NOTIFICATION CONTAINER -->
+<div class="notification-container" id="notificationContainer"></div>
+
+<script>
+  // Dados de pessoas que compraram
+  const buyerNames = [
+    { name: 'Matheus R.', city: 'São Paulo' },
+    { name: 'Letícia M.', city: 'Rio de Janeiro' },
+    { name: 'Gabriel S.', city: 'Belo Horizonte' },
+    { name: 'Lucas F.', city: 'Curitiba' },
+    { name: 'Amanda P.', city: 'Salvador' },
+    { name: 'Felipe T.', city: 'Brasília' },
+    { name: 'Isabella L.', city: 'Recife' },
+    { name: 'Bruno C.', city: 'Porto Alegre' },
+    { name: 'Marina G.', city: 'Fortaleza' },
+    { name: 'Victor H.', city: 'Manaus' },
+    { name: 'Carolina A.', city: 'Santos' },
+    { name: 'Rafael M.', city: 'Goiânia' },
+    { name: 'Beatriz S.', city: 'Campinas' },
+    { name: 'André V.', city: 'Osasco' },
+    { name: 'Sofia D.', city: 'Santo André' },
+  ];
+
+  const messages = [
+    'entrou no método',
+    'começou sua jornada',
+    'disse "vou mudar"',
+    'senta na cadeira',
+    'parou de sobreviver',
+    'entrou pro time',
+  ];
+
+  let notificationCount = 0;
+
+  function showNotification() {
+    const container = document.getElementById('notificationContainer');
+    
+    const randomBuyer = buyerNames[Math.floor(Math.random() * buyerNames.length)];
+    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+    
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.innerHTML = `
+      <div class="notification-name">
+        <span class="notification-icon">✅</span>${randomBuyer.name}
+      </div>
+      <div class="notification-text">
+        ${randomMessage} · ${randomBuyer.city}
+      </div>
+    `;
+    
+    container.appendChild(notification);
+    notificationCount++;
+
+    // Remove após 5 segundos com animação
+    setTimeout(() => {
+      notification.classList.add('exit');
+      setTimeout(() => {
+        notification.remove();
+      }, 400);
+    }, 5000);
+
+    // Limita a 3 notificações visíveis ao mesmo tempo
+    const notifications = container.querySelectorAll('.notification');
+    if (notifications.length > 3) {
+      const oldestNotification = notifications[0];
+      oldestNotification.classList.add('exit');
+      setTimeout(() => {
+        oldestNotification.remove();
+      }, 400);
+    }
+  }
+
+  // Mostrar primeira notificação após 3 segundos
+  setTimeout(showNotification, 3000);
+
+  // Intervalo de 8-12 segundos para novas notificações
+  setInterval(() => {
+    const randomDelay = Math.random() * 4000 + 8000;
+    setTimeout(showNotification, randomDelay);
+  }, 12000);
+</script>
 
 <script>
   // Reveal on scroll
